@@ -1,3 +1,48 @@
+<?php
+// Initialize message variables
+$successMsg = "";
+$errorMsg = "";
+
+// Check if the submit button was pressed (Practical 7)
+if (isset($_POST['submit'])) {
+    
+    // Clean and sanitize the data (Practical 7)
+    $firstName = htmlspecialchars(trim($_POST['firstName']));
+    $lastName  = htmlspecialchars(trim($_POST['lastName']));
+    $email     = trim($_POST['email']);
+    $phone     = htmlspecialchars(trim($_POST['phone']));
+    $subject   = htmlspecialchars(trim($_POST['subject']));
+    $message   = htmlspecialchars(trim($_POST['message']));
+
+    // Advanced Validation: Check if email is valid (Practical 7)
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errorMsg = "Please enter a valid email address.";
+    } else {
+        // Prepare the email to send to the department (Practical 9)
+        $to = "bhimaodedara099@gmail.com"; // The email where you want to receive messages
+        $emailSubject = "New Website Inquiry: " . $subject;
+        
+        // Compose the plain text email message (Practical 9)
+        $emailBody = "You have received a new message from the website contact form.\n\n";
+        $emailBody .= "Name: " . $firstName . " " . $lastName . "\n";
+        $emailBody .= "Email: " . $email . "\n";
+        $emailBody .= "Phone: " . $phone . "\n";
+        $emailBody .= "Subject: " . $subject . "\n\n";
+        $emailBody .= "Message:\n" . $message . "\n";
+        
+        // Email headers
+        $headers = "From: " . $email . "\r\n";
+        $headers .= "Reply-To: " . $email . "\r\n";
+
+        // Send the email (Practical 9)
+        if(mail($to, $emailSubject, $emailBody, $headers)) {
+            $successMsg = "Thank you! Your message has been sent successfully. We will get back to you soon.";
+        } else {
+            $errorMsg = "Sorry, there was a problem sending your message. Please try again later.";
+        }
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -109,66 +154,50 @@
     </section>
 
     <!-- Contact Form -->
-    <section class="py-5">
-        <div class="container">
-            <h2 class="text-center mb-5"
-                style="color: #2c3e50; border-bottom: 2px solid #3498db; display: inline-block; padding-bottom: 15px;">
-                Send Us a Message</h2>
-            <div class="row justify-content-center">
-                <div class="col-md-8">
-                    <form>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="firstName" class="form-label">First Name *</label>
-                                <input type="text" class="form-control" id="firstName" required
-                                    style="border-radius: 8px; padding: 12px 15px;">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="lastName" class="form-label">Last Name *</label>
-                                <input type="text" class="form-control" id="lastName" required
-                                    style="border-radius: 8px; padding: 12px 15px;">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="email" class="form-label">Email Address *</label>
-                                <input type="email" class="form-control" id="email" required
-                                    style="border-radius: 8px; padding: 12px 15px;">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="phone" class="form-label">Phone Number</label>
-                                <input type="tel" class="form-control" id="phone"
-                                    style="border-radius: 8px; padding: 12px 15px;">
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="subject" class="form-label">Subject *</label>
-                            <select class="form-select" id="subject" required
-                                style="border-radius: 8px; padding: 12px 15px;">
-                                <option value="" selected disabled>Select a subject</option>
-                                <option value="admissions">Admissions Inquiry</option>
-                                <option value="programs">Program Information</option>
-                                <option value="facilities">Facilities Tour</option>
-                                <option value="research">Research Opportunities</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="message" class="form-label">Message *</label>
-                            <textarea class="form-control" id="message" rows="5" required
-                                style="border-radius: 8px; padding: 12px 15px;"></textarea>
-                        </div>
-                        <div class="text-center">
-                            <button type="submit" class="btn text-white"
-                                style="background-color: #7f1587; padding: 12px 30px; border-radius: 8px;">Send
-                                Message</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </section>
 
+    <?php if(!empty($successMsg)) { echo "<div class='alert alert-success'>$successMsg</div>"; } ?>
+<?php if(!empty($errorMsg)) { echo "<div class='alert alert-danger'>$errorMsg</div>"; } ?>
+
+<form method="POST" action="">
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="firstName" class="form-label">First Name *</label>
+            <input type="text" class="form-control" id="firstName" name="firstName" required style="border-radius: 8px; padding: 12px 15px;">
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="lastName" class="form-label">Last Name *</label>
+            <input type="text" class="form-control" id="lastName" name="lastName" required style="border-radius: 8px; padding: 12px 15px;">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="email" class="form-label">Email Address *</label>
+            <input type="email" class="form-control" id="email" name="email" required style="border-radius: 8px; padding: 12px 15px;">
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="phone" class="form-label">Phone Number</label>
+            <input type="tel" class="form-control" id="phone" name="phone" style="border-radius: 8px; padding: 12px 15px;">
+        </div>
+    </div>
+    <div class="mb-3">
+        <label for="subject" class="form-label">Subject *</label>
+        <select class="form-select" id="subject" name="subject" required style="border-radius: 8px; padding: 12px 15px;">
+            <option value="" selected disabled>Select a subject</option>
+            <option value="Admissions Inquiry">Admissions Inquiry</option>
+            <option value="Program Information">Program Information</option>
+            <option value="Facilities Tour">Facilities Tour</option>
+            <option value="Research Opportunities">Research Opportunities</option>
+            <option value="Other">Other</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="message" class="form-label">Message *</label>
+        <textarea class="form-control" id="message" name="message" rows="5" required style="border-radius: 8px; padding: 12px 15px;"></textarea>
+    </div>
+    <div class="text-center">
+        <button type="submit" name="submit" class="btn text-white" style="background-color: #7f1587; padding: 12px 30px; border-radius: 8px;">Send Message</button>
+    </div>
+</form>
     <!-- Department Contacts -->
     <section class="py-5">
         <div class="container">
